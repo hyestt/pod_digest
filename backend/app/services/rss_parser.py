@@ -6,7 +6,7 @@ import httpx
 
 class RSSParser:
     def __init__(self):
-        self.client = httpx.Client(timeout=30.0)
+        self.client = httpx.Client(timeout=httpx.Timeout(30.0), follow_redirects=True)
     
     def parse_feed(self, rss_url: str) -> List[Dict]:
         """Parse RSS feed and return list of episodes"""

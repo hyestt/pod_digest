@@ -1,18 +1,49 @@
 import React, { useState } from 'react';
+import { api, SubscribeRequest, SubscribeResponse } from '../services/api';
 
 const SubscribeSection: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus('loading');
+    setMessage('');
     
-    // For now, just show success (replace with Beehiiv integration later)
-    setTimeout(() => {
-      setStatus('success');
-      setEmail('');
-    }, 1000);
+    try {
+      const subscribeData: SubscribeRequest = {
+        email: email.trim(),
+        name: name.trim() || undefined,
+        utm_source: 'website',
+        utm_medium: 'organic'
+      };
+      
+      const response: SubscribeResponse = await api.subscribeToNewsletter(subscribeData);
+      
+      if (response.success) {
+        setStatus('success');
+        setMessage(response.message);
+        setEmail('');
+        setName('');
+      } else {
+        setStatus('error');
+        setMessage('訂閱失敗，請稍後再試。');
+      }
+    } catch (error: any) {
+      setStatus('error');
+      
+      if (error.response?.status === 400) {
+        setMessage(error.response.data.detail || '請檢查您的郵箱地址是否正確。');
+      } else if (error.response?.status === 429) {
+        setMessage('請求過於頻繁，請稍後再試。');
+      } else if (error.response?.status >= 500) {
+        setMessage('服務暫時不可用，請稍後再試。');
+      } else {
+        setMessage('網絡錯誤，請檢查您的網絡連接。');
+      }
+    }
   };
 
   return (
@@ -32,12 +63,30 @@ const SubscribeSection: React.FC = () => {
               <div className="text-green-800">
                 <h3 className="font-semibold mb-2">订阅成功！🎉</h3>
                 <p className="text-sm">
-                  请查看您的邮箱确认订阅。您将在每周日收到播客摘要。
+                  {message || '请查看您的邮箱确认订阅。您将在每周日收到播客摘要。'}
                 </p>
               </div>
             </div>
-          ) : (
+          ) : status === 'error' ? (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-4">
+              <div className="text-red-800">
+                <h3 className="font-semibold mb-2">订阅失败</h3>
+                <p className="text-sm">{message}</p>
+              </div>
+            </div>
+          ) : null}
+          
+          {status !== 'success' && (
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="您的姓名（可选）"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                />
+              </div>
               <div>
                 <input
                   type="email"

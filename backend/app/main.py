@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
-from .api import podcasts, admin
+from .api import podcasts, admin, newsletter
 from .database import engine
 from .models import Base
 
@@ -25,6 +25,7 @@ app.add_middleware(
 # Include routers
 app.include_router(podcasts.router, prefix="/api", tags=["podcasts"])
 app.include_router(admin.router, prefix="/api/admin", tags=["admin"])
+app.include_router(newsletter.router, prefix="/api/newsletter", tags=["newsletter"])
 
 
 @app.get("/health")

@@ -4,14 +4,14 @@ from typing import Optional
 
 class Settings(BaseSettings):
     # Database
-    database_url: str = "postgresql://user:password@localhost/pod_digest"
+    database_url: str = "sqlite:///./test.db"
     
     # OpenAI
     openai_api_key: str
     
     # Beehiiv
-    beehiiv_api_key: str
-    beehiiv_publication_id: str
+    beehiiv_api_key: Optional[str] = None
+    beehiiv_publication_id: Optional[str] = None
     
     # Redis
     redis_url: str = "redis://localhost:6379"

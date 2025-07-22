@@ -45,7 +45,9 @@ pod_digest/
 │   │   └── tasks.py        # Celery background tasks
 │   ├── requirements.txt    # Python dependencies
 │   ├── Dockerfile         # Backend container
-│   └── init_data.py       # Sample data initialization
+│   ├── init_data.py       # Sample data initialization
+│   ├── add_podcast.py     # Add new podcasts
+│   └── start_api.sh       # API server startup script
 ├── frontend/               # React frontend
 │   ├── src/
 │   │   ├── components/    # React components
@@ -53,8 +55,16 @@ pod_digest/
 │   │   └── App.tsx        # Main application
 │   ├── package.json       # Node dependencies
 │   └── Dockerfile         # Frontend container
-├── railway.toml           # Railway deployment config
-└── README.md              # This file
+├── downloads/              # Generated content
+│   ├── audio/             # Downloaded audio files
+│   ├── transcripts/       # Generated transcripts
+│   └── summaries/         # Generated summaries
+├── unified_podcast_processor.py  # Unified podcast processor
+├── run_unified_processor.sh      # Processor startup script
+├── UNIFIED_PROCESSOR_GUIDE.md    # Processor documentation
+├── API_DOCUMENTATION.md          # API documentation
+├── railway.toml                  # Railway deployment config
+└── README.md                     # This file
 ```
 
 ## Setup Instructions
@@ -124,11 +134,51 @@ npm start
 - Backend API: http://localhost:8000
 - API Documentation: http://localhost:8000/docs
 
-## API Endpoints
+## 🎙️ Podcast Processing
 
-- `GET /api/podcasts` - Get featured podcasts
+### Add New Podcasts
+```bash
+cd backend
+source test_env/bin/activate  
+python add_podcast.py
+```
+
+### Process Podcast Episodes
+```bash
+# Process any podcast with unified processor
+./run_unified_processor.sh
+
+# Process specific podcast
+./run_unified_processor.sh --podcast "Acquired"
+
+# See all available podcasts
+./run_unified_processor.sh --list
+```
+
+For detailed processor usage, see **[UNIFIED_PROCESSOR_GUIDE.md](UNIFIED_PROCESSOR_GUIDE.md)**
+
+## API Documentation
+
+### 📚 Complete API Documentation
+See **[API_DOCUMENTATION.md](API_DOCUMENTATION.md)** for detailed API usage, examples, and interactive documentation.
+
+### 🚀 Quick API Access
+- **API Server**: http://localhost:8000
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
+
+### 📋 Key Endpoints
+**Public API:**
+- `GET /api/podcasts` - Get active podcasts
+
+**Admin API:**
+- `GET /api/admin/podcasts` - Get all podcasts
+- `POST /api/admin/podcasts` - Add new podcast
+- `PUT /api/admin/podcasts/{id}` - Update podcast
+- `DELETE /api/admin/podcasts/{id}` - Deactivate podcast
+
+**System:**
 - `GET /health` - Health check endpoint
-- `GET /` - API root
 
 ## How It Works
 

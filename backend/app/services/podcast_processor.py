@@ -9,7 +9,7 @@ from ..config import settings
 class PodcastProcessor:
     def __init__(self):
         self.openai_client = OpenAI(api_key=settings.openai_api_key)
-        self.http_client = httpx.Client(timeout=300.0)
+        self.http_client = httpx.Client(timeout=httpx.Timeout(300.0), follow_redirects=True)
     
     async def download_audio(self, audio_url: str) -> str:
         """Download audio file to temporary location"""

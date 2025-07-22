@@ -13,7 +13,7 @@ class BeehiivService:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json"
         }
-        self.client = httpx.Client(headers=self.headers, timeout=30.0)
+        self.client = httpx.Client(headers=self.headers, timeout=httpx.Timeout(30.0))
     
     async def create_post(self, title: str, content: str, send_at: Optional[datetime] = None) -> Dict:
         """Create a new post/newsletter in Beehiiv"""

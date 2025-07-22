@@ -29,6 +29,19 @@ export interface PodcastFull extends Podcast {
   is_active: boolean;
 }
 
+export interface SubscribeRequest {
+  email: string;
+  name?: string;
+  utm_source?: string;
+  utm_medium?: string;
+}
+
+export interface SubscribeResponse {
+  success: boolean;
+  message: string;
+  subscriber_id?: string;
+}
+
 export const api = {
   getPodcasts: async (): Promise<Podcast[]> => {
     const response = await axios.get(`${API_BASE_URL}/podcasts`);
@@ -53,5 +66,11 @@ export const api = {
 
   deletePodcast: async (id: number): Promise<void> => {
     await axios.delete(`${API_BASE_URL}/admin/podcasts/${id}`);
+  },
+
+  // Newsletter functions
+  subscribeToNewsletter: async (subscribeData: SubscribeRequest): Promise<SubscribeResponse> => {
+    const response = await axios.post(`${API_BASE_URL}/newsletter/subscribe`, subscribeData);
+    return response.data;
   }
 };
